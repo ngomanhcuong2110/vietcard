@@ -9,7 +9,7 @@ import statistics
 import math
 from unidecode import unidecode
 from util.util import get_threshold_img, get_contour_boxes, run_item, gather_results
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
 
 
 def show_img(img):
@@ -18,12 +18,12 @@ def show_img(img):
 
 
 def get_each_number(img, normal_img):
-    config = '--oem 0  --psm 10 -c tessedit_char_whitelist=1234567890'
+    config = '--tessdata-dir "C://Program Files//Tesseract-OCR//tessdata//" --oem 0  --psm 10 -c tessedit_char_whitelist=1234567890'
     lang = 'eng'
-    text = pytesseract.image_to_string(img, lang=lang, config=config)
+    text = pytesseract.image_to_string(img, lang='eng',config='--psm 6')
     if not text:
         text = pytesseract.image_to_string(
-            normal_img, lang=lang, config=config)
+            normal_img, lang='eng', config='--psm 6')
         if not text:
             text = '?'
     return text
@@ -31,24 +31,24 @@ def get_each_number(img, normal_img):
 
 def get_text(img):
     filename = 'temp.png'
-    config = '--psm 7'
+    config = '--tessdata-dir "C://Program Files//Tesseract-OCR//tessdata//" --psm 7'
     lang = 'vie'
     cv2.imwrite(filename, img)
     text = pytesseract.image_to_string(Image.open(
-        filename), lang=lang, config=config)
+        filename), lang='vie', config='--psm 7')
     if not text:
         subprocess.call(["./resources/textcleaner", "-g", "-e", "normalize",
                          "-o", "11", "-t", "5", "temp.png", "temp.png"])
         text = pytesseract.image_to_string(Image.open(
-            filename), lang=lang, config=config)
+            filename), lang='vie', config=' --psm 7')
     text = text.strip('. :')
+    print("=======================>",text)
     return text
 
 
 def get_dob_text(img):
     filename = 'temp.png'
-    config = '--psm 7'
-    lang = 'eng'
+    
     h, w, _ = img.shape
     if h < 25:
         ratio = math.ceil(25/h)
@@ -56,7 +56,7 @@ def get_dob_text(img):
                          interpolation=cv2.INTER_CUBIC)
     cv2.imwrite(filename, img)
     text = pytesseract.image_to_string(Image.open(
-        filename), lang=lang, config=config)
+        filename), lang='eng', config="--psm 7")
     date = re.findall(r'\d{2}/\d{2}/\d{4}', text)
     if date:
         numbers = re.findall(r'\d', date[0])
@@ -204,7 +204,7 @@ def fix_last_name(name):
     fname = 'resources/common_last_name.txt'
     words = name.split()
     words[0] = unidecode(words[0]).upper()
-    with open(fname) as f:
+    with open(fname,encoding="utf8") as f:
         last_name_list = f.readlines()
     last_name_list = [x.strip().upper() for x in last_name_list]
     last_name_decode = [unidecode(x) for x in last_name_list]
