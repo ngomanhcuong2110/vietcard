@@ -18,8 +18,7 @@ def show_img(img):
 
 
 def get_each_number(img, normal_img):
-    config = '--tessdata-dir "C://Program Files//Tesseract-OCR//tessdata//" --oem 0  --psm 10 -c tessedit_char_whitelist=1234567890'
-    lang = 'eng'
+    
     text = pytesseract.image_to_string(img, lang='eng',config='--psm 6')
     if not text:
         text = pytesseract.image_to_string(
@@ -31,8 +30,7 @@ def get_each_number(img, normal_img):
 
 def get_text(img):
     filename = 'temp.png'
-    config = '--tessdata-dir "C://Program Files//Tesseract-OCR//tessdata//" --psm 7'
-    lang = 'vie'
+    
     cv2.imwrite(filename, img)
     text = pytesseract.image_to_string(Image.open(
         filename), lang='vie', config='--psm 7')
